@@ -1,8 +1,9 @@
 import bcrypt from "bcrypt"
+import jwt from "jsonwebtoken"
 import { Doctor } from "../models/doctorSchema.js";
 import { Patient } from "../models/patientSchema.js";
 
-export const resgisterUser = async(req,res)=>{
+export const registerUser = async(req,res)=>{
     const {name,email,password,role,specialization,consultation_fee,balance} = req.body;
     if(!name || !email || !password || !role){
         res.status(400).json({error:"Required fields are missing"})
@@ -52,4 +53,50 @@ export const resgisterUser = async(req,res)=>{
         }
     }
 
+}
+
+export const loginUser = async(req,res)=>{
+    const {email,password,role} = req.body;
+    if(!email || !password || !role){
+        res.status(400).json({error:"Required fields are missing"})
+        return;
+    }
+    try {
+        let user;
+        if(role == "doctor"){
+            user = await Doctor.findOne({email});
+        }else{
+            user = await Patient.findOne({email});
+        }
+        if(!user){
+            res.status(400).json({error:"No user with these credentials"})
+            return;
+        }
+        const isCorrectPass = await bcrypt.compare(password,user.password)
+        if(!isCorrectPass){
+            res.status(400).json({error:"Incorrect Password"})
+            return;
+        }
+        const token = jwt.sign({userId:user._id},process.env.JWT_SECRET,{
+            expiresIn:"8h",
+        })
+        res.status(200).json({message:"User logged in Successfully",token:token})
+    } catch (err) {
+        res.status(500).json({error:err,message:"Failed to log in"})
+    }
+}
+
+export const authUser = async(req,res,next)=>{
+    const {token} = req.header('token')
+
+    if(!token){
+        res.status(400).json({error:"User not authorized"})
+    }
+    try {
+        const isAuth = jwt.verify(token,process.env.JWT_SECRET)
+        req.userId = isAuth.userId
+        next()
+    } catch (error) {
+        res.status(500).json({error:"Error in authorization"})
+    }
 }
