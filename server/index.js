@@ -4,6 +4,7 @@ import connectDb from "./config/Db.js"
 
 const app = express();
 dotenv.config({path:"./config/variables.env"})
+app.use(express.json())
 
 connectDb()
 
