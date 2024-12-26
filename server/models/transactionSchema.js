@@ -13,7 +13,7 @@ const transactionSchema = mongoose.Schema({
     discount:{type:Number,
             default:0},
     
-    transaction_date:{tyep:Date,
+    transaction_date:{type:Date,
             default:Date.now}
 
 })

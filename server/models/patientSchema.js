@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import validator from "validator"
 
 const patientSchema = mongoose.Schema({
     name:{type:String,
@@ -9,7 +10,7 @@ const patientSchema = mongoose.Schema({
         required:[true,"Provide an email"],
         validate:[validator.isEmail,"Provide a valid Email"]},
 
-    password:{type:Number,
+    password:{type:String,
         required:[true,"Provide a password"]},
 
     balance:{type:Number,

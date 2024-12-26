@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import validator from "validator"
 
 const doctorSchema = mongoose.Schema({
     name:{type:String,
@@ -9,14 +10,14 @@ const doctorSchema = mongoose.Schema({
         required:[true,"Provide an email"],
         validate:[validator.isEmail,"Provide a valid Email"]},
 
-    password:{type:Number,
+    password:{type:String,
         required:[true,"Provide a password"]},
     
     specialization:{type:String,
         required:[true,"Provide specialization"]},
 
-    consultaion_fee:{type:Number,
-        required:[true,"Provide a consultaion fee"]},
+    consultation_fee:{type:Number,
+        required:[true,"Provide a consultation fee"]},
 
     created_at:{type:Date,
         default:Date.now}
