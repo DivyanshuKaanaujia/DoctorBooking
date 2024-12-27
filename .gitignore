@@ -1,3 +1,6 @@
 
 /server/config/variables.env
 /server/node_modules
+
+/client/node_modules
+/client/src/config/variables.env

@@ -5,8 +5,9 @@ import { Patient } from "../models/patientSchema.js";
 
 export const registerUser = async(req,res)=>{
     const {name,email,password,role,specialization,consultation_fee,balance} = req.body;
-    if(!name || !email || !password || !role){
+    if(!name || !email || !password){
         res.status(400).json({error:"Required fields are missing"})
+        return;
     }
 
     if(role == "doctor"){
@@ -104,4 +105,13 @@ export const authUser = async(req,res,next)=>{
 
 export const verifyUser = async(req,res)=>{
     console.log("User is verified")
+}
+
+export const getDoctors = async(req,res)=>{
+    try{
+        const doctors = await Doctor.find();
+        res.status(200).json({message:"Doctors fetched",doctors:doctors});
+    }catch(err){
+        res.status(500).json({message:"Error while fetching doctors",error:err.message})
+    }
 }
