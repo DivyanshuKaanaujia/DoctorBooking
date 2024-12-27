@@ -35,7 +35,7 @@ export const registerUser = async(req,res)=>{
     }else{
         let userbalance = balance?balance:0;
         try {
-            let regUser = await Doctor.findOne({email:email});
+            let regUser = await Patient.findOne({email:email});
             if(regUser){
                 res.status(400).json({error:"User Exists with this email"})
                 return;
@@ -87,10 +87,11 @@ export const loginUser = async(req,res)=>{
 }
 
 export const authUser = async(req,res,next)=>{
-    const {token} = req.header('token')
+    const token = req.header("token")
 
     if(!token){
         res.status(400).json({error:"User not authorized"})
+        return
     }
     try {
         const isAuth = jwt.verify(token,process.env.JWT_SECRET)
@@ -99,4 +100,8 @@ export const authUser = async(req,res,next)=>{
     } catch (error) {
         res.status(500).json({error:"Error in authorization"})
     }
+}
+
+export const verifyUser = async(req,res)=>{
+    console.log("User is verified")
 }
