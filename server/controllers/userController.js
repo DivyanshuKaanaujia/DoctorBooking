@@ -91,7 +91,7 @@ export const authUser = async(req,res,next)=>{
     const token = req.header("token")
 
     if(!token){
-        res.status(400).json({error:"User not authorized"})
+        res.status(401).json({error:"User not authorized"})
         return
     }
     try {
@@ -99,12 +99,12 @@ export const authUser = async(req,res,next)=>{
         req.userId = isAuth.userId
         next()
     } catch (error) {
-        res.status(500).json({error:"Error in authorization"})
+        res.status(403).json({error:"Error in authorization"})
     }
 }
 
 export const verifyUser = async(req,res)=>{
-    console.log("User is verified")
+    res.status(200).json({isVerified:true})
 }
 
 export const getDoctors = async(req,res)=>{

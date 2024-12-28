@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
+  const navigate = useNavigate();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -27,6 +29,7 @@ const Register = () => {
       });
 
       console.log("User Registered", regUser);
+      navigate('../login')
     } catch (error) {
       console.error("Error while registering:", error.response?.data || error);
       alert("Error during registration: " + (error.response?.data.error || "Unknown error"));

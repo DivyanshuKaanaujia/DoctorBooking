@@ -1,42 +1,63 @@
+import { Appointment } from "../models/appointmentSchema.js";
 import { Patient } from "../models/patientSchema.js";
 import { Transaction } from "../models/transactionSchema.js";
 import mongoose from "mongoose";
 
-export const makeTransaction = async(req,res)=>{
-    const {doctorId,price} = req.body;
+export const makeTransaction = async (req, res) => {
+    const { doctorId, price, appointmentDate } = req.body;
     const patientId = req.userId;
-    if(!doctorId || !patientId || !price){
-        res.status(400).json({error:"Required fields are missing"})
+
+    if (!doctorId || !patientId || !price || !appointmentDate) {
+        res.status(400).json({ error: "Required fields are missing" });
         return;
     }
 
     try {
-        const isFirst = await Transaction.findOne({
-            doctor:doctorId,
-            patient:patientId})
+        const isFirstTransaction = await Transaction.findOne({
+            doctor: doctorId,
+            patient: patientId,
+        });
+
         let discount = 0;
-        if(!isFirst){
-            discount = price*0.2;
+        if (!isFirstTransaction) {
+            discount = price * 0.2;
         }
-        const finalPrice = price-discount;
-        const user = await Patient.findOne({_id:patientId})
-        if(user.balance<finalPrice){
-            res.status(200).json({message:"Your wallet balance is not sufficient"})
+
+        const finalPrice = price - discount;
+
+        const patient = await Patient.findById(patientId);
+        if (patient.balance < finalPrice) {
+            res.status(200).json({ message: "Your wallet balance is not sufficient" });
             return;
         }
-        user.balance = user.balance-finalPrice;
-        user.save();
-        const trans = await Transaction.create({
-            doctor:doctorId,
-            patient:patientId,
-            price:price,
-            discount:discount
-        })
-        res.status(200).json({message:"Transaction was successfull",Transaction:trans})
+
+        patient.balance -= finalPrice;
+        await patient.save();
+
+        const transaction = await Transaction.create({
+            doctor: doctorId,
+            patient: patientId,
+            price: price,
+            discount: discount,
+        });
+
+        const appointment = await Appointment.create({
+            doctor: doctorId,
+            patient: patientId,
+            date: new Date(appointmentDate),
+        });
+
+        res.status(200).json({
+            message: "Transaction and appointment were successful",
+            transaction,
+            appointment,
+        });
+
     } catch (error) {
-        res.status(500).json({error:error,message:"Error while making transaction"})
+        res.status(500).json({ error: error.message, message: "Error while making transaction or creating appointment" });
     }
-}
+};
+
 
 export const generateReport = async (req, res) => {
     const { startDate, endDate, doctorId, patientId } = req.body;
