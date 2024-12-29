@@ -104,7 +104,12 @@ export const authUser = async(req,res,next)=>{
 }
 
 export const verifyUser = async(req,res)=>{
-    res.status(200).json({isVerified:true})
+    const isDoctor = await Doctor.findOne({_id:req.userId});
+    if(isDoctor){
+        res.status(200).json({isVerified:true,role:"doctor"})
+        return;
+    }
+    res.status(200).json({isVerified:true,role:"patient"})
 }
 
 export const getDoctors = async(req,res)=>{

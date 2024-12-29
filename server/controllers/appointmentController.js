@@ -3,17 +3,24 @@ import { Appointment } from "../models/appointmentSchema.js";
 export const getAppointment = async (req, res) => {
     try {
         const doctorId = req.userId;
-        const appointments = await Appointment.find({ doctor: doctorId })
+        let appointments = await Appointment.find({ doctor: doctorId })
             .populate('patient', 'name email')
             .sort({ date: 1 });
-        res.status(200).json({ appointments });
-    } catch (error) {
+        if(appointments.length == 0){
+            const patientId = req.userId;
+            appointments = await Appointment.find({ patient: patientId })
+            .populate('doctor', 'name email')
+            .sort({ date: 1 });
+        }
+            res.status(200).json({ appointments });
+        } catch (error) {
         res.status(500).json({ error: 'Error fetching appointments' });
     }
 }
 
 export const updateAppointmentStatus = async (req, res) => {
-    const { appointmentId, status } = req.body;
+    const {appointmentId} = req.params;
+    const { status } = req.body;
 
     if (!['completed', 'canceled'].includes(status)) {
         return res.status(400).json({ error: 'Invalid status value' });

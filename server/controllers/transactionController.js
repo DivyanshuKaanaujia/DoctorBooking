@@ -6,6 +6,7 @@ import mongoose from "mongoose";
 export const makeTransaction = async (req, res) => {
     const { doctorId, price, appointmentDate } = req.body;
     const patientId = req.userId;
+    let discounted = false;
 
     if (!doctorId || !patientId || !price || !appointmentDate) {
         res.status(400).json({ error: "Required fields are missing" });
@@ -21,13 +22,14 @@ export const makeTransaction = async (req, res) => {
         let discount = 0;
         if (!isFirstTransaction) {
             discount = price * 0.2;
+            discounted = true;
         }
 
         const finalPrice = price - discount;
 
         const patient = await Patient.findById(patientId);
         if (patient.balance < finalPrice) {
-            res.status(200).json({ message: "Your wallet balance is not sufficient" });
+            res.status(400).json({ message: "Your wallet balance is not sufficient" });
             return;
         }
 
@@ -51,6 +53,7 @@ export const makeTransaction = async (req, res) => {
             message: "Transaction and appointment were successful",
             transaction,
             appointment,
+            discounted:discounted
         });
 
     } catch (error) {

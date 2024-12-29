@@ -22,7 +22,7 @@ const Login = () => {
         role: role ? "doctor" : "patient"
       });
       localStorage.setItem("token",logUser.data.token)
-      navigate('../home')
+      navigate('../')
     } catch (error) {
       console.error("Error while logging in:", error.response?.data || error);
       alert("Error during loggin in: " + (error.response?.data.error || "Unknown error"));
