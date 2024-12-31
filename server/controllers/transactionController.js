@@ -78,7 +78,6 @@ export const generateReport = async (req, res) => {
     }
 
     try {
-        // 1. Discount Usage Report
         const discountUsageReport = await Transaction.aggregate([
             { $match: { ...matchCriteria, discount: { $gt: 0 } } },
             {
@@ -109,7 +108,6 @@ export const generateReport = async (req, res) => {
             },
         ]);
 
-        // 2. Wallet Transactions Report
         const walletTransactionsReport = await Transaction.aggregate([
             { $match: matchCriteria },
             {
@@ -141,7 +139,6 @@ export const generateReport = async (req, res) => {
             },
         ]);
 
-        // 3. Doctor’s Earnings Report
         const doctorsEarningsReport = await Transaction.aggregate([
             { $match: matchCriteria },
             {
@@ -171,7 +168,6 @@ export const generateReport = async (req, res) => {
             },
         ]);
 
-        // 4. System Summary Report
         const systemSummaryReport = await Transaction.aggregate([
             { $match: matchCriteria },
             {
@@ -196,7 +192,6 @@ export const generateReport = async (req, res) => {
             },
         ]);
 
-        // Return the aggregated reports
         res.status(200).json({
             discountUsageReport,
             walletTransactionsReport,

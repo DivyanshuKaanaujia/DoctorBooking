@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const DoctorDashboard = () => {
+  const navigate = useNavigate();
   const [appointments, setAppointments] = useState([]);
 
   useEffect(() => {
@@ -44,6 +46,7 @@ const DoctorDashboard = () => {
   return (
     <div>
       <h1>Doctor Dashboard</h1>
+      <button onClick={() => navigate('/doctorReport')}>View Report</button>
       <div>
         {appointments && appointments.length > 0 ? (
           <table border="1" cellPadding="10">
