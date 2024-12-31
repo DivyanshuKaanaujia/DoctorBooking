@@ -1,15 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import {useNavigate} from 'react-router-dom'
 
 const PatientDashboard = () => {
+  const navigate = useNavigate();
   const [appointments, setAppointments] = useState([]);
   const [doctors, setDoctors] = useState([]);
   const [appointmentDate, setAppointmentDate] = useState("");
+  const [walletChange,setWalletChange] = useState(false);
+  const [topup,setTopup] = useState(0);
+  const [balance,setBalance] = useState(0);
 
   useEffect(() => {
     async function fetchInitialData() {
       try {
         const token = localStorage.getItem('token');
+
+        const userData = await axios.get("http://localhost:3000/getuser",{
+          headers: { token: token },
+        });
+        setBalance(userData.data.user.balance);
 
         const appointmentsResponse = await axios.get(
           "http://localhost:3000/appointment/getall",
@@ -47,11 +57,23 @@ const PatientDashboard = () => {
           headers: { token: token },
         }
       );
-      setAppointments([...appointments, response.data.appointment]);
-      if(response.data.discounted){
+  
+      const doctor = doctors.find(doc => doc._id === doctorId);
+  
+      setAppointments([
+        ...appointments,
+        { ...response.data.appointment, doctor },
+      ]);
+  
+      setBalance(
+        balance - response.data.transaction.price + response.data.transaction.discount
+      );
+  
+      if (response.data.discounted) {
         alert("Appointment booked successfully! 20% Discount for you !!");
+      } else {
+        alert("Appointment booked successfully!");
       }
-      else alert("Appointment booked successfully!");
     } catch (error) {
       console.error(
         "Error creating appointment:",
@@ -59,28 +81,55 @@ const PatientDashboard = () => {
       );
     }
   };
+  
+
+  async function addBalance(){
+    const token = localStorage.getItem('token');
+    try {
+      const val = await axios.patch(`http://localhost:3000/addbalance/${topup}`,{},{
+        headers:{
+          token:token
+        }
+      });
+      setBalance(val.data.user.balance);
+      alert("Balance added!");
+    } catch (error) {
+      console.log("Error while adding balance: ",error.message);
+    }
+  }
 
   return (
     <div>
       <h1>Patient Dashboard</h1>
-
+      <button onClick={() => navigate('/patientReport')}>View Report</button>
+      <h3>Wallet: {balance}</h3>
+      <button onClick={()=>{setWalletChange(!walletChange)}}>{!walletChange?"TopUp Wallet":"Close"}</button>
+      {walletChange?<div>
+        Enter amount to topup: <input type='number' min={0} max={200} value={topup} onChange={(e)=>{setTopup(e.target.value)}}/>
+        <button onClick={addBalance}>Add amount</button>
+      </div>:""}
       <div>
         <h2>Your Appointments:</h2>
-        {appointments && appointments.length > 0 ? (
-          appointments.map((ele) => (
-            <div key={ele._id}>
-              <div>
-                <b>Doctor:</b> {ele.doctor.name}
-              </div>
-              <div>
-                <b>Appointment Date:</b> {ele.date.slice(0, 10)}
-              </div>
-              <div>
-                <b>Status:</b> {ele.status}
-              </div>
-            </div>
-          ))
-        ) : (
+        {appointments && appointments.length > 0 ? <div>
+            <table border="1" cellPadding="5">
+              <thead>
+                <tr>
+                  <th>Doctor Name</th>
+                  <th>Appointment Date</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {appointments.map((ele) => (
+                  <tr key={ele._id}>
+                    <td>{ele.doctor.name}</td>
+                    <td>{ele.date.slice(0, 10)}</td>
+                    <td>{ele.status}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div> : (
           <p>No appointments found.</p>
         )}
       </div>

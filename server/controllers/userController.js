@@ -120,3 +120,34 @@ export const getDoctors = async(req,res)=>{
         res.status(500).json({message:"Error while fetching doctors",error:err.message})
     }
 }
+
+export const addBalance = async(req,res)=>{
+    const {topup} = req.params;
+    if(!topup){
+        res.status(400).json({error:"Topup field is empty"});
+    }
+    const patientId = req.userId;
+    try{
+        const user = await Patient.findOne({_id:patientId});
+        user.balance = user.balance + parseInt(topup,10);
+        await user.save();
+        res.status(200).json({message:"Balance Added",user})
+    }catch(error){
+        res.status(500).json({error:error.message,message:"Error while adding balance"});
+    }
+}
+
+export const getUser = async(req,res)=>{
+    try {
+        let user = await Doctor.findOne({_id:req.userId});
+        if(!user){
+            user = await Patient.findOne({_id:req.userId});
+        }
+        if(!user){
+            res.status(400).json({error:"No user found"});
+        }
+        res.status(200).json({user});
+    } catch (error) {
+        res.status(500).json({error:error.message});
+    }
+}

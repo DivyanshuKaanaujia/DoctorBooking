@@ -46,17 +46,36 @@ const DoctorDashboard = () => {
       <h1>Doctor Dashboard</h1>
       <div>
         {appointments && appointments.length > 0 ? (
-          appointments.map((ele) => (
-            <div key={ele._id}>
-              <div><b>Patient Name:</b> {ele.patient.name}</div>
-              <div><b>Appointment Date: </b> {ele.date.slice(0, 10)}</div>
-              <div><b>Status: </b> {ele.status}</div>
-              <div><b>Contact Details: </b> <a href={`mailto:${ele.patient.email}`}>{ele.patient.email}</a></div>
-              <div>
-                <button onClick={() => updateStatus(ele._id, "completed")}>Mark Completed</button>
-              </div>
-            </div>
-          ))
+          <table border="1" cellPadding="10">
+            <thead>
+              <tr>
+                <th>Patient Name</th>
+                <th>Appointment Date</th>
+                <th>Status</th>
+                <th>Contact Details</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {appointments.map((ele) => (
+                <tr key={ele._id}>
+                  <td>{ele.patient.name}</td>
+                  <td>{ele.date.slice(0, 10)}</td>
+                  <td>{ele.status}</td>
+                  <td>
+                    <a href={`mailto:${ele.patient.email}`}>{ele.patient.email}</a>
+                  </td>
+                  <td>
+                  {ele.status === 'pending'?<button onClick={() => updateStatus(ele._id, "completed")}>
+                      Mark Completed
+                    </button>:<button onClick={() => updateStatus(ele._id, "pending")}>
+                      Mark Pending
+                    </button>}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         ) : (
           <p>No appointments found.</p>
         )}
