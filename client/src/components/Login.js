@@ -30,6 +30,8 @@ const Login = () => {
   }
 
   return (
+      <div>
+
     <form onSubmit={handleLogin}>
     <input
       type="text"
@@ -37,14 +39,14 @@ const Login = () => {
       name="email"
       value={email}
       onChange={(e) => setEmail(e.target.value)}
-    />
+      />
     <input
       type="password"
       placeholder="Password"
       name="password"
       value={password}
       onChange={(e) => setPassword(e.target.value)}
-    />
+      />
     Are you a Doctor?{" "}
     <input
       type="checkbox"
@@ -54,6 +56,9 @@ const Login = () => {
     />
     <button type="submit">Login</button>
   </form>
+  <a href={'../register'}>Go to Register</a>
+  </div>
+  
   )
 }
 

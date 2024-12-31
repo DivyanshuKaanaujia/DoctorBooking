@@ -102,12 +102,14 @@ const PatientDashboard = () => {
     <div>
       <h1>Patient Dashboard</h1>
       <button onClick={() => navigate('/patientReport')}>View Report</button>
-      <h3>Wallet: {balance}</h3>
+      <div>
+      <h3>Wallet: ${balance}</h3>
       <button onClick={()=>{setWalletChange(!walletChange)}}>{!walletChange?"TopUp Wallet":"Close"}</button>
       {walletChange?<div>
         Enter amount to topup: <input type='number' min={0} max={200} value={topup} onChange={(e)=>{setTopup(e.target.value)}}/>
         <button onClick={addBalance}>Add amount</button>
       </div>:""}
+      </div>
       <div>
         <h2>Your Appointments:</h2>
         {appointments && appointments.length > 0 ? <div>

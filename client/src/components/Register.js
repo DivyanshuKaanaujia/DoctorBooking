@@ -37,6 +37,8 @@ const Register = () => {
   }
 
   return (
+    <div>
+
     <form onSubmit={handleRegister}>
       <input
         type="text"
@@ -44,28 +46,28 @@ const Register = () => {
         name="name"
         value={name}
         onChange={(e) => setName(e.target.value)}
-      />
+        />
       <input
         type="text"
         placeholder="Your Email"
         name="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-      />
+        />
       <input
         type="password"
         placeholder="Password"
         name="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-      />
+        />
       Applying as Doctor?{" "}
       <input
         type="checkbox"
         name="role"
         checked={role}
         onChange={() => setRole(!role)}
-      />
+        />
       {role ? (
         <div>
           <input
@@ -74,20 +76,22 @@ const Register = () => {
             name="specialization"
             value={specialization}
             onChange={(e) => setSpecialization(e.target.value)}
-          />
+            />
           <input
             type="number"
             placeholder="Your Fees"
             name="fee"
             value={fee}
             onChange={(e) => setFee(e.target.value)}
-          />
+            />
         </div>
       ) : (
         ""
-      )}
+        )}
       <button type="submit">Register</button>
     </form>
+    <a href={'../login'}>Go to Login</a>
+  </div>
   );
 };
 
